@@ -8,6 +8,8 @@ import java.util.List;
 @Service
 public class StudentService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(StudentService.class);
+
     private final StudentRepository studentRepository;
 
     public StudentService(StudentRepository studentRepository) {
@@ -34,20 +36,24 @@ public class StudentService {
     }
 
     public Page<StudentResponse> getAllStudents(int page, int size) {
+        log.info("Fetching students - page: {}, size: {}", page, size);
         return studentRepository.findAll(PageRequest.of(page, size))
                 .map(this::toResponse);
     }
 
     public StudentResponse getStudentById(Long id) {
+        log.info("Fetching student with id: {}", id);
         return toResponse(studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id)));
     }
 
     public StudentResponse createStudent(StudentRequest request) {
+        log.info("Creating student with email: {}", request.getEmail());
         return toResponse(studentRepository.save(toEntity(request)));
     }
 
     public StudentResponse updateStudent(Long id, StudentRequest request) {
+        log.info("Updating student with id: {}", id);
         Student student = studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));
         student.setName(request.getName());
@@ -57,6 +63,7 @@ public class StudentService {
     }
 
     public void deleteStudent(Long id) {
+        log.info("Deleting student with id: {}", id);
         studentRepository.findById(id)
                 .orElseThrow(() -> new StudentNotFoundException(id));
         studentRepository.deleteById(id);
