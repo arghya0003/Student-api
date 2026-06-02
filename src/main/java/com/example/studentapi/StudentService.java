@@ -19,7 +19,9 @@ public class StudentService {
             student.getId(),
             student.getName(),
             student.getEmail(),
-            student.getCourse()
+            student.getCourse(),
+            student.getCreatedAt(),
+            student.getUpdatedAt()
         );
     }
 
