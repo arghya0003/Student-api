@@ -11,7 +11,8 @@ import java.util.Date;
 public class JwtUtil {
 
     private static final String SECRET = "mysecretkeymysecretkeymysecretkeymysecretkey";
-    private static final long EXPIRATION_MS = 86400000;
+    private static final long ACCESS_EXPIRATION_MS = 900000;
+    private static final long REFRESH_EXPIRATION_MS = 604800000;
 
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
@@ -21,8 +22,19 @@ public class JwtUtil {
         return Jwts.builder()
                 .subject(username)
                 .claim("role", role)
+                .claim("type", "access")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_EXPIRATION_MS))
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(String username) {
+        return Jwts.builder()
+                .subject(username)
+                .claim("type", "refresh")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION_MS))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -43,6 +55,15 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload()
                 .get("role", String.class);
+    }
+
+    public String extractType(String token) {
+        return Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .get("type", String.class);
     }
 
     public boolean isTokenValid(String token) {
