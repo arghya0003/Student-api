@@ -1,3 +1,4 @@
+# Spring Boot
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
@@ -29,5 +30,31 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# Angular
+/tmp
+/out-tsc
+/bazel-out
+/node_modules
+npm-debug.log
+yarn-error.log
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
+__screenshots__/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/mcp.json
+.history/*
+
+# System
+.DS_Store
+Thumbs.db
