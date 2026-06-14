@@ -44,9 +44,9 @@ class StudentServiceTest {
     @Test
     void getAllStudents_returnsPage() {
         Page<Student> page = new PageImpl<>(List.of(sampleStudent()));
-        when(studentRepository.findAll(PageRequest.of(0, 10))).thenReturn(page);
+        when(studentRepository.findAll(PageRequest.of(0, 10, org.springframework.data.domain.Sort.by("id").ascending()))).thenReturn(page);
 
-        Page<StudentResponse> result = studentService.getAllStudents(0, 10);
+        Page<StudentResponse> result = studentService.getAllStudents(0, 10, "id", "asc");
 
         assertEquals(1, result.getTotalElements());
     }

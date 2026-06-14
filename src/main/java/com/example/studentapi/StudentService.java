@@ -2,6 +2,7 @@ package com.example.studentapi;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -35,9 +36,12 @@ public class StudentService {
         return student;
     }
 
-    public Page<StudentResponse> getAllStudents(int page, int size) {
-        log.info("Fetching students - page: {}, size: {}", page, size);
-        return studentRepository.findAll(PageRequest.of(page, size))
+    public Page<StudentResponse> getAllStudents(int page, int size, String sortBy, String direction) {
+        log.info("Fetching students - page: {}, size: {}, sortBy: {}, direction: {}", page, size, sortBy, direction);
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+        return studentRepository.findAll(PageRequest.of(page, size, sort))
                 .map(this::toResponse);
     }
 
