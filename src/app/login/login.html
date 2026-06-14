@@ -1,0 +1,26 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Student API</h2>
+    <p class="subtitle">Sign in to continue</p>
+
+    <div class="error" *ngIf="error">{{ error }}</div>
+
+    <form (ngSubmit)="login()">
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" [(ngModel)]="username" name="username" placeholder="Enter username" required />
+      </div>
+
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Enter password" required />
+      </div>
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <p class="hint">Use <strong>admin / password</strong> or <strong>user / password</strong></p>
+  </div>
+</div>
