@@ -17,7 +17,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
         if ("admin".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-            String token = jwtUtil.generateToken(request.getUsername());
+            String token = jwtUtil.generateToken(request.getUsername(), "ROLE_ADMIN");
+            return ResponseEntity.ok(new AuthResponse(token));
+        }
+        if ("user".equals(request.getUsername()) && "password".equals(request.getPassword())) {
+            String token = jwtUtil.generateToken(request.getUsername(), "ROLE_USER");
             return ResponseEntity.ok(new AuthResponse(token));
         }
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
