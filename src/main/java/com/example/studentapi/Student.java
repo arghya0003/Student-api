@@ -25,6 +25,7 @@ public class Student {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
 
     @NotBlank(message = "Course is required")
