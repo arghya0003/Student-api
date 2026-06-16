@@ -20,6 +20,14 @@ export class StudentService {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 
+  getMe() {
+    return this.http.get<any>(`${this.apiUrl}/me`);
+  }
+
+  countByCourse(course: string) {
+    return this.http.get<any>(`${this.apiUrl}/count/course/${encodeURIComponent(course)}`);
+  }
+
   create(student: any) {
     return this.http.post<any>(this.apiUrl, student);
   }
@@ -34,5 +42,13 @@ export class StudentService {
 
   search(name: string) {
     return this.http.get<any>(`${this.apiUrl}/search`, { params: { name } });
+  }
+
+  filter(query: string, course: string) {
+    return this.http.get<any[]>(`${this.apiUrl}/filter`, { params: { query, course } });
+  }
+
+  getCourses() {
+    return this.http.get<string[]>(`${this.apiUrl}/courses`);
   }
 }
