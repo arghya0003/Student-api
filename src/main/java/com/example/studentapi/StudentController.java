@@ -1,7 +1,9 @@
 package com.example.studentapi;
 
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestParam;
 import jakarta.validation.Valid;
@@ -14,6 +16,16 @@ public class StudentController {
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
+    }
+
+    @GetMapping("/me")
+    public StudentResponse getCurrentStudent(Authentication authentication) {
+        return studentService.getStudentByRollNumber(authentication.getName());
+    }
+
+    @GetMapping("/count/course/{course}")
+    public Map<String, Long> countByCourse(@PathVariable String course) {
+        return Map.of("count", studentService.countByCourse(course));
     }
 
     @GetMapping
@@ -53,5 +65,17 @@ public class StudentController {
     @GetMapping("/search")
     public List<StudentResponse> getStudentsByName(@RequestParam String name) {
         return studentService.getStudentsByName(name);
+    }
+
+    @GetMapping("/filter")
+    public List<StudentResponse> filterStudents(
+            @RequestParam(required = false, defaultValue = "") String query,
+            @RequestParam(required = false, defaultValue = "") String course) {
+        return studentService.filterStudents(query, course);
+    }
+
+    @GetMapping("/courses")
+    public List<String> getAllCourses() {
+        return studentService.getAllCourses();
     }
 }

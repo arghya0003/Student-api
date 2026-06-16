@@ -2,6 +2,7 @@ package com.example.studentapi;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -32,10 +33,14 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/students/**").hasAnyRole("ADMIN", "USER")
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/students/**").hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/students/**").hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/students/**").hasRole("ADMIN")
+                        // Student can see their own profile and branch count
+                        .requestMatchers(HttpMethod.GET, "/students/me").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/students/count/**").hasAnyRole("USER", "ADMIN")
+                        // Only admin can list/get all students
+                        .requestMatchers(HttpMethod.GET, "/students/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/students/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/students/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/students/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

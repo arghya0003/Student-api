@@ -5,29 +5,41 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     private final JwtUtil jwtUtil;
+    private final StudentRepository studentRepository;
 
-    public AuthController(JwtUtil jwtUtil) {
+    public AuthController(JwtUtil jwtUtil, StudentRepository studentRepository) {
         this.jwtUtil = jwtUtil;
+        this.studentRepository = studentRepository;
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        // Admin login
         if ("admin".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-            String accessToken = jwtUtil.generateToken(request.getUsername(), "ROLE_ADMIN");
-            String refreshToken = jwtUtil.generateRefreshToken(request.getUsername());
+            String accessToken = jwtUtil.generateToken("admin", "ROLE_ADMIN");
+            String refreshToken = jwtUtil.generateRefreshToken("admin");
             return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
         }
-        if ("user".equals(request.getUsername()) && "password".equals(request.getPassword())) {
-            String accessToken = jwtUtil.generateToken(request.getUsername(), "ROLE_USER");
-            String refreshToken = jwtUtil.generateRefreshToken(request.getUsername());
-            return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+
+        // Student login: username = rollNumber, password = dateOfBirth (YYYY-MM-DD)
+        Optional<Student> studentOpt = studentRepository.findByRollNumber(request.getUsername());
+        if (studentOpt.isPresent()) {
+            Student student = studentOpt.get();
+            if (student.getDateOfBirth() != null &&
+                    student.getDateOfBirth().toString().equals(request.getPassword())) {
+                String accessToken = jwtUtil.generateToken(student.getRollNumber(), "ROLE_USER");
+                String refreshToken = jwtUtil.generateRefreshToken(student.getRollNumber());
+                return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
+            }
         }
+
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 

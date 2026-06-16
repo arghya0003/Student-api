@@ -23,6 +23,8 @@ public class StudentService {
             student.getName(),
             student.getEmail(),
             student.getCourse(),
+            student.getRollNumber(),
+            student.getDateOfBirth(),
             student.getCreatedAt(),
             student.getUpdatedAt()
         );
@@ -33,6 +35,8 @@ public class StudentService {
         student.setName(request.getName());
         student.setEmail(request.getEmail());
         student.setCourse(request.getCourse());
+        student.setRollNumber(request.getRollNumber());
+        student.setDateOfBirth(request.getDateOfBirth());
         return student;
     }
 
@@ -51,6 +55,15 @@ public class StudentService {
                 .orElseThrow(() -> new StudentNotFoundException(id)));
     }
 
+    public StudentResponse getStudentByRollNumber(String rollNumber) {
+        return toResponse(studentRepository.findByRollNumber(rollNumber)
+                .orElseThrow(() -> new StudentNotFoundException(rollNumber)));
+    }
+
+    public long countByCourse(String course) {
+        return studentRepository.countByCourse(course);
+    }
+
     public StudentResponse createStudent(StudentRequest request) {
         log.info("Creating student with email: {}", request.getEmail());
         return toResponse(studentRepository.save(toEntity(request)));
@@ -63,6 +76,8 @@ public class StudentService {
         student.setName(request.getName());
         student.setEmail(request.getEmail());
         student.setCourse(request.getCourse());
+        student.setRollNumber(request.getRollNumber());
+        student.setDateOfBirth(request.getDateOfBirth());
         return toResponse(studentRepository.save(student));
     }
 
@@ -85,5 +100,16 @@ public class StudentService {
                 .stream()
                 .map(this::toResponse)
                 .toList();
+    }
+
+    public List<StudentResponse> filterStudents(String query, String course) {
+        return studentRepository.filter(
+                query == null ? "" : query,
+                course == null ? "" : course
+        ).stream().map(this::toResponse).toList();
+    }
+
+    public List<String> getAllCourses() {
+        return studentRepository.findAllDistinctCourses();
     }
 }
