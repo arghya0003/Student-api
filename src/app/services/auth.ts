@@ -31,4 +31,26 @@ export class AuthService {
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
+
+  private decodeToken(): any {
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      return JSON.parse(atob(token.split('.')[1]));
+    } catch {
+      return null;
+    }
+  }
+
+  getRole(): string {
+    return this.decodeToken()?.role ?? '';
+  }
+
+  isAdmin(): boolean {
+    return this.getRole() === 'ROLE_ADMIN';
+  }
+
+  getRollNumber(): string {
+    return this.decodeToken()?.sub ?? '';
+  }
 }

@@ -1,26 +1,83 @@
-<div class="login-container">
+<div class="page">
   <div class="login-card">
-    <h2>Student API</h2>
-    <p class="subtitle">Sign in to continue</p>
+    <div class="card-brand">
+      <div class="brand-icon">S</div>
+      <span>StudentManager</span>
+    </div>
 
-    <div class="error" *ngIf="error">{{ error }}</div>
+    <div class="mode-tabs">
+      <button type="button" class="tab" [class.active]="mode === 'student'" (click)="switchMode('student')">
+        <span class="material-icons">school</span> Student
+      </button>
+      <button type="button" class="tab" [class.active]="mode === 'admin'" (click)="switchMode('admin')">
+        <span class="material-icons">admin_panel_settings</span> Admin
+      </button>
+    </div>
+
+    <ng-container *ngIf="mode === 'student'">
+      <h2>Student Login</h2>
+      <p class="subtitle">Enter your roll number and date of birth</p>
+    </ng-container>
+    <ng-container *ngIf="mode === 'admin'">
+      <h2>Admin Login</h2>
+      <p class="subtitle">Sign in with your admin credentials</p>
+    </ng-container>
+
+    <div class="alert error" *ngIf="error">
+      <span class="material-icons">error_outline</span>
+      {{ error }}
+    </div>
 
     <form (ngSubmit)="login()">
-      <div class="form-group">
-        <label>Username</label>
-        <input type="text" [(ngModel)]="username" name="username" placeholder="Enter username" required />
-      </div>
+      <ng-container *ngIf="mode === 'student'">
+        <div class="form-group">
+          <label>Roll Number</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">badge</span>
+            <input type="text" [(ngModel)]="rollNumber" name="rollNumber" placeholder="e.g. CS2021001" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Date of Birth</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">cake</span>
+            <input type="date" [(ngModel)]="dateOfBirth" name="dateOfBirth" required />
+          </div>
+        </div>
+      </ng-container>
 
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" [(ngModel)]="password" name="password" placeholder="Enter password" required />
-      </div>
+      <ng-container *ngIf="mode === 'admin'">
+        <div class="form-group">
+          <label>Username</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">person</span>
+            <input type="text" [(ngModel)]="username" name="username" placeholder="Enter username" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-wrapper">
+            <span class="material-icons input-icon">lock</span>
+            <input type="password" [(ngModel)]="password" name="password" placeholder="Enter password" required />
+          </div>
+        </div>
+      </ng-container>
 
-      <button type="submit" [disabled]="loading">
+      <button type="submit" class="btn-login" [disabled]="loading">
         {{ loading ? 'Signing in...' : 'Sign In' }}
       </button>
     </form>
 
-    <p class="hint">Use <strong>admin / password</strong> or <strong>user / password</strong></p>
+    <div class="credentials" *ngIf="mode === 'admin'">
+      <p>Test credentials:</p>
+      <div class="cred-row">
+        <span class="badge admin">ADMIN</span>
+        <code>admin / password</code>
+      </div>
+    </div>
+    <div class="hint" *ngIf="mode === 'student'">
+      <span class="material-icons">info</span>
+      Use the roll number and date of birth set by your admin.
+    </div>
   </div>
 </div>
